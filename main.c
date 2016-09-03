@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define PI 3.14159265
+
 #define DEFAULT_WIDTH 1280
 #define DEFAULT_HEIGHT 720
 
@@ -28,6 +30,8 @@ typedef struct Pixel {
 void draw(SDL_Window *window, SDL_Renderer *renderer);
 void drawPixel(Pixel pixel, SDL_Renderer *renderer);
 Pixel randomPixel(int w, int h);
+
+void drawSineWave(int w, int h, SDL_Renderer *renderer);
 
 int main(int argc, char *args[]) {
   time_t t;
@@ -123,10 +127,8 @@ void draw(SDL_Window *window, SDL_Renderer *renderer) {
       bgColor.a
   );
   SDL_RenderClear(renderer);
-
-  for(int i = 0; i < (100000); i++) {
-    drawPixel(randomPixel(w, h), renderer);
-  } 
+   
+  drawSineWave(w, h, renderer); 
 
   SDL_RenderPresent(renderer);
 
@@ -162,4 +164,23 @@ void drawPixel(Pixel pixel, SDL_Renderer *renderer) {
   );
 
   SDL_RenderDrawPoint(renderer, pixel.point.x, pixel.point.y);
+}
+
+void drawSineWave(int w, int h, SDL_Renderer *renderer) {
+  static float startAngle = PI;
+  static int amp = -1;
+  static float frequency = (PI / 60);
+
+  Color c = {0, 255, 0, 255};
+  float angle = startAngle;
+  
+  for(int i = 0; i < w; i++) {
+    Point p = {i, sin(angle) * amp + (h / 2)};
+    Pixel pix = {p, c};
+    drawPixel(pix, renderer);
+    angle += frequency;
+  }
+
+  startAngle += frequency;
+  amp += (h / 120) * ((rand() % 2) > 0 ? -1 : 1);
 }
