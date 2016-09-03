@@ -1,5 +1,5 @@
-#SDL Starter
-Starter code for SDL experiments. Written in C.
+#SDL Sine Wave
+Draws a sine wave moving across the screen, hopefully in an interesting way.
 
 ##Dependencies:
 - SDL2 - <https://www.libsdl.org/>
