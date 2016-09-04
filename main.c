@@ -32,6 +32,7 @@ void drawPixel(Pixel pixel, SDL_Renderer *renderer);
 Pixel randomPixel(int w, int h);
 
 void drawSineWave(int w, int h, SDL_Renderer *renderer);
+void drawGrid(int w, int h, SDL_Renderer *renderer);
 
 int main(int argc, char *args[]) {
   time_t t;
@@ -128,7 +129,8 @@ void draw(SDL_Window *window, SDL_Renderer *renderer) {
   );
   SDL_RenderClear(renderer);
    
-  drawSineWave(w, h, renderer); 
+  //drawSineWave(w, h, renderer); 
+  drawGrid(w, h, renderer);
 
   SDL_RenderPresent(renderer);
 
@@ -152,6 +154,64 @@ Pixel randomPixel(int w, int h) {
   pixel.color.a = rand() % 255;
 
   return pixel;
+} 
+
+void drawGrid(int w, int h, SDL_Renderer *renderer) {
+  int cols = 30;
+  int rows = 30;
+  int cellWidth = roundf((float)w / (float)cols);
+  int cellHeight = roundf((float)h / (float)rows);
+  Color gridColor = {0, 255, 0, 255};
+  Pixel gridPixels[w * (cols - 1) + h * (rows - 1)]; 
+  int index = 0;
+
+  static float startAngle = PI;
+  static int amp = -1;
+  static float frequency = (PI / 120);
+  float angle = startAngle;
+  int maxAmp = cellHeight / 5;
+  int ampStep = cellHeight / 20;
+  
+  amp = maxAmp;
+
+  /* Draw Columns */
+  for(int i = 1; i < cols; i++) {
+    int x = i * cellWidth;
+    for(int j = 0; j < h; j++) {
+      Point p = {sin(angle) * amp + x, j};
+      Pixel pix = {p, gridColor};
+      gridPixels[index] = pix;
+      index++;
+      drawPixel(pix, renderer);
+      angle += frequency;
+    }
+  }
+
+  /* Draw Rows */
+  for(int i = 1; i < rows; i++) {
+    int y = i * cellHeight;
+    for(int j = 0; j < w; j++) {
+      Point p = {j, sin(angle) * amp + y};
+      Pixel pix = {p, gridColor};
+      gridPixels[index] = pix;
+      index++;
+      drawPixel(pix, renderer);
+      angle += frequency;
+    }
+  }
+
+  startAngle += frequency;
+  /*
+  amp += ampStep * ((rand() % 2) > 0 ? -1 : 1);
+  if(abs(amp) > maxAmp) {
+    if(amp < 0) {
+      amp = maxAmp * -1;
+    } else {
+      amp = maxAmp;
+    }
+  }
+  */
+  
 }
 
 void drawPixel(Pixel pixel, SDL_Renderer *renderer) {
