@@ -103,7 +103,7 @@ int main(int argc, char *args[]) {
 }
 
 void draw(SDL_Window *window, SDL_Renderer *renderer) {
-  const int fps = 90;
+  const int fps = 20;
   const Uint32 ticksPerFrame = 1000 / fps; 
   SDL_DisplayMode mode;
   int w;
@@ -167,7 +167,7 @@ void sineWaveDistortPoint(Point *p, int w, int h) {
   static int yFreqDir = 1;
 
   static Uint32 lastUpdateTicks = 0;
-  int updateTime = 10;
+  int updateTime = 50;
   Uint32 currentTicks = SDL_GetTicks();
 
   float normalizedX = (float)p->x / w;
@@ -185,18 +185,17 @@ void sineWaveDistortPoint(Point *p, int w, int h) {
   p->y += yOffset;
 
   if(currentTicks - lastUpdateTicks >= updateTime) {
-    //amp = rand() % 50;
-    xFreq += (0.5) * xFreqDir;
+    xFreq += (0.1) * xFreqDir;
     xFreqDir = (xFreq > 25 || xFreq < 1) ? xFreqDir *= -1 : xFreqDir; 
-    yFreq += (0.5) * yFreqDir;
+    yFreq += (0.1) * yFreqDir;
     yFreqDir = (yFreq > 30 || yFreq < 1) ? yFreqDir *= -1 : yFreqDir;
     lastUpdateTicks = currentTicks;
   }
 }
 
 void drawGrid(int w, int h, SDL_Renderer *renderer) {
-  int cols = 30;
-  int rows = 30;
+  int cols = 4;
+  int rows = 4;
   int cellWidth = roundf((float)w / (float)cols);
   int cellHeight = roundf((float)h / (float)rows);
   Color gridColor = {0, 255, 0, 255};
