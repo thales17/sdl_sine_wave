@@ -186,17 +186,17 @@ void sineWaveDistortPoint(Point *p, int w, int h) {
 
   if(currentTicks - lastUpdateTicks >= updateTime) {
     //amp = rand() % 50;
-    xFreq += (0.5) * xFreqDir;
+    xFreq += (0.1) * xFreqDir;
     xFreqDir = (xFreq > 25 || xFreq < 1) ? xFreqDir *= -1 : xFreqDir; 
-    yFreq += (0.5) * yFreqDir;
+    yFreq += (0.1) * yFreqDir;
     yFreqDir = (yFreq > 30 || yFreq < 1) ? yFreqDir *= -1 : yFreqDir;
     lastUpdateTicks = currentTicks;
   }
 }
 
 void drawGrid(int w, int h, SDL_Renderer *renderer) {
-  int cols = 30;
-  int rows = 30;
+  int cols = 50;
+  int rows = 50;
   int cellWidth = roundf((float)w / (float)cols);
   int cellHeight = roundf((float)h / (float)rows);
   Color gridColor = {0, 255, 0, 255};
