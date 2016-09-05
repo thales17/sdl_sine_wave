@@ -159,21 +159,23 @@ Pixel randomPixel(int w, int h) {
 
 void sineWaveDistortPoint(Point *p, int w, int h) {
   static int amp = 50;
-  static float freq = 2 * PI;
-  static int speed = 10;
   static float tx = PI / 9;
   static float ty = PI / 4;
+  static float xFreq = 1;
+  static float yFreq = 1;
+  static int xFreqDir = 1;
+  static int yFreqDir = 1;
 
   static Uint32 lastUpdateTicks = 0;
-  int updateTime = 100;
+  int updateTime = 10;
   Uint32 currentTicks = SDL_GetTicks();
 
   float normalizedX = (float)p->x / w;
   float normalizedY = (float)p->y / h;
 
 
-  int xOffset = amp * (sin(25 * normalizedY + 30 * normalizedX + 2 * PI * tx) * 0.5);
-  int yOffset = amp * (sin(25 * normalizedY + 30 * normalizedX + 2 * PI * ty) * 0.5);
+  int xOffset = amp * (sin(xFreq * normalizedY + yFreq * normalizedX + 2 * PI * tx) * 0.5);
+  int yOffset = amp * (sin(xFreq * normalizedY + yFreq * normalizedX + 2 * PI * ty) * 0.5);
 
   if(lastUpdateTicks == 0) {
     lastUpdateTicks = SDL_GetTicks();
@@ -182,16 +184,19 @@ void sineWaveDistortPoint(Point *p, int w, int h) {
   p->x += xOffset;
   p->y += yOffset;
 
-  if(currentTicks - lastUpdateTicks > updateTime) {
-    tx += PI / 16;
-    ty += PI / 16;
+  if(currentTicks - lastUpdateTicks >= updateTime) {
+    //amp = rand() % 50;
+    xFreq += (0.5) * xFreqDir;
+    xFreqDir = (xFreq > 25 || xFreq < 1) ? xFreqDir *= -1 : xFreqDir; 
+    yFreq += (0.5) * yFreqDir;
+    yFreqDir = (yFreq > 30 || yFreq < 1) ? yFreqDir *= -1 : yFreqDir;
     lastUpdateTicks = currentTicks;
   }
 }
 
 void drawGrid(int w, int h, SDL_Renderer *renderer) {
-  int cols = 10;
-  int rows = 10;
+  int cols = 30;
+  int rows = 30;
   int cellWidth = roundf((float)w / (float)cols);
   int cellHeight = roundf((float)h / (float)rows);
   Color gridColor = {0, 255, 0, 255};
