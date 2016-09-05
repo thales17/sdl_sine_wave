@@ -31,6 +31,7 @@ void draw(SDL_Window *window, SDL_Renderer *renderer);
 void drawPixel(Pixel pixel, SDL_Renderer *renderer);
 Pixel randomPixel(int w, int h);
 
+void sineWaveDistortPoint(Point *p);
 void drawSineWave(int w, int h, SDL_Renderer *renderer);
 void drawGrid(int w, int h, SDL_Renderer *renderer);
 
@@ -102,7 +103,7 @@ int main(int argc, char *args[]) {
 }
 
 void draw(SDL_Window *window, SDL_Renderer *renderer) {
-  const int fps = 60;
+  const int fps = 90;
   const Uint32 ticksPerFrame = 1000 / fps; 
   SDL_DisplayMode mode;
   int w;
@@ -156,62 +157,57 @@ Pixel randomPixel(int w, int h) {
   return pixel;
 } 
 
+void sineWaveDistortPoint(Point *p) {
+  static float tx = 0;
+  static float ty = 0;
+
+  float x = sin(25.0 * p->y + 30.0 * p->x + 2*PI*tx*20) * 10;
+  float y = sin(25.0 * p->y + 30.0 * p->x + 2*PI*ty*20) * 10;
+  
+  p->x += x;
+  p->y += y;
+
+  tx += 0.0001;
+  ty += 0.001;
+
+  tx = (tx > 1.0) ? 0 : tx;
+  ty = (ty > 1.0) ? 0 : ty;
+}
+
 void drawGrid(int w, int h, SDL_Renderer *renderer) {
-  int cols = 30;
-  int rows = 30;
+  int cols = 10;
+  int rows = 10;
   int cellWidth = roundf((float)w / (float)cols);
   int cellHeight = roundf((float)h / (float)rows);
   Color gridColor = {0, 255, 0, 255};
   Pixel gridPixels[w * (cols - 1) + h * (rows - 1)]; 
   int index = 0;
 
-  static float startAngle = PI;
-  static int amp = -1;
-  static float frequency = (PI / 120);
-  float angle = startAngle;
-  int maxAmp = cellHeight / 5;
-  int ampStep = cellHeight / 20;
-  
-  amp = maxAmp;
-
   /* Draw Columns */
   for(int i = 1; i < cols; i++) {
     int x = i * cellWidth;
     for(int j = 0; j < h; j++) {
-      Point p = {sin(angle) * amp + x, j};
+      Point p = {x, j};
+      sineWaveDistortPoint(&p);
       Pixel pix = {p, gridColor};
       gridPixels[index] = pix;
       index++;
       drawPixel(pix, renderer);
-      angle += frequency;
     }
   }
-
+ 
   /* Draw Rows */
   for(int i = 1; i < rows; i++) {
     int y = i * cellHeight;
     for(int j = 0; j < w; j++) {
-      Point p = {j, sin(angle) * amp + y};
+      Point p = {j, y};
+      sineWaveDistortPoint(&p);
       Pixel pix = {p, gridColor};
       gridPixels[index] = pix;
       index++;
       drawPixel(pix, renderer);
-      angle += frequency;
     }
   }
-
-  startAngle += frequency;
-  /*
-  amp += ampStep * ((rand() % 2) > 0 ? -1 : 1);
-  if(abs(amp) > maxAmp) {
-    if(amp < 0) {
-      amp = maxAmp * -1;
-    } else {
-      amp = maxAmp;
-    }
-  }
-  */
-  
 }
 
 void drawPixel(Pixel pixel, SDL_Renderer *renderer) {
