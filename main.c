@@ -31,7 +31,7 @@ void draw(SDL_Window *window, SDL_Renderer *renderer);
 void drawPixel(Pixel pixel, SDL_Renderer *renderer);
 Pixel randomPixel(int w, int h);
 
-void sineWaveDistortPoint(Point *p);
+void sineWaveDistortPoint(Point *p, int w, int h);
 void drawSineWave(int w, int h, SDL_Renderer *renderer);
 void drawGrid(int w, int h, SDL_Renderer *renderer);
 
@@ -157,21 +157,36 @@ Pixel randomPixel(int w, int h) {
   return pixel;
 } 
 
-void sineWaveDistortPoint(Point *p) {
-  static float tx = 0;
-  static float ty = 0;
+void sineWaveDistortPoint(Point *p, int w, int h) {
+  static int amp = 50;
+  static float freq = 2 * PI;
+  static int speed = 10;
+  static float tx = PI / 9;
+  static float ty = PI / 4;
 
-  float x = sin(25.0 * p->y + 30.0 * p->x + 2*PI*tx*20) * 10;
-  float y = sin(25.0 * p->y + 30.0 * p->x + 2*PI*ty*20) * 10;
-  
-  p->x += x;
-  p->y += y;
+  static Uint32 lastUpdateTicks = 0;
+  int updateTime = 100;
+  Uint32 currentTicks = SDL_GetTicks();
 
-  tx += 0.0001;
-  ty += 0.001;
+  float normalizedX = (float)p->x / w;
+  float normalizedY = (float)p->y / h;
 
-  tx = (tx > 1.0) ? 0 : tx;
-  ty = (ty > 1.0) ? 0 : ty;
+
+  int xOffset = amp * (sin(25 * normalizedY + 30 * normalizedX + 2 * PI * tx) * 0.5);
+  int yOffset = amp * (sin(25 * normalizedY + 30 * normalizedX + 2 * PI * ty) * 0.5);
+
+  if(lastUpdateTicks == 0) {
+    lastUpdateTicks = SDL_GetTicks();
+  }
+
+  p->x += xOffset;
+  p->y += yOffset;
+
+  if(currentTicks - lastUpdateTicks > updateTime) {
+    tx += PI / 16;
+    ty += PI / 16;
+    lastUpdateTicks = currentTicks;
+  }
 }
 
 void drawGrid(int w, int h, SDL_Renderer *renderer) {
@@ -188,7 +203,7 @@ void drawGrid(int w, int h, SDL_Renderer *renderer) {
     int x = i * cellWidth;
     for(int j = 0; j < h; j++) {
       Point p = {x, j};
-      sineWaveDistortPoint(&p);
+      sineWaveDistortPoint(&p, w, h);
       Pixel pix = {p, gridColor};
       gridPixels[index] = pix;
       index++;
@@ -201,7 +216,7 @@ void drawGrid(int w, int h, SDL_Renderer *renderer) {
     int y = i * cellHeight;
     for(int j = 0; j < w; j++) {
       Point p = {j, y};
-      sineWaveDistortPoint(&p);
+      sineWaveDistortPoint(&p, w, h);
       Pixel pix = {p, gridColor};
       gridPixels[index] = pix;
       index++;
