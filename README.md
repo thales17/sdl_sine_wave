@@ -14,7 +14,7 @@ Install SDL from Brew on OSX or from the official repositories of Arch Linux.
 `pacman -S sdl2`
 
 ####Ubuntu
-`sudo apt-get install sdl2`
+`sudo apt-get install libsdl2-dev`
 
 ##Running
 Just type `make` to build and run the program.

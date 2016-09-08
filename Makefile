@@ -4,11 +4,11 @@ test:
 
 build:
 	gcc -std=c99 -c main.c
-	gcc main.o -o sdl-starter -lm -lSDL2;
+	gcc main.o -o sine-wave -lm -lSDL2;
 
 run:
-	./sdl-starter
+	./sine-wave
 
 clean:
-	-rm sdl-starter;
+	-rm sine-wave;
 	-rm *.o;
