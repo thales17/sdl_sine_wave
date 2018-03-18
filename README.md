@@ -1,20 +1,20 @@
-#SDL Sine Wave
+# SDL Sine Wave
 Draws a sine wave moving across the screen, hopefully in an interesting way.
 
-##Dependencies:
+## Dependencies:
 - SDL2 - <https://www.libsdl.org/>
 
-###Dependency Installation:
+### Dependency Installation:
 Install SDL from Brew on OSX or from the official repositories of Arch Linux.
 
-####OSX 
+#### OSX 
 `brew install sdl2`
 
-####Arch Linux
+#### Arch Linux
 `pacman -S sdl2`
 
-####Ubuntu
+#### Ubuntu
 `sudo apt-get install libsdl2-dev`
 
-##Running
+## Running
 Just type `make` to build and run the program.
